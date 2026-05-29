@@ -23,6 +23,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COL_LOCATION = "location";
     private static final String COL_DATE = "date";
     private static final String COL_IMAGE_PATH = "image_path";
+    private static final String COL_LATITUDE = "latitude";
+    private static final String COL_LONGITUDE = "longitude";
     //constructor
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -39,7 +41,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_CATEGORY + " TEXT, " +
                 COL_LOCATION + " TEXT, " +
                 COL_DATE + " TEXT, " +
-                COL_IMAGE_PATH + " TEXT)";
+                COL_IMAGE_PATH + " TEXT, " +
+                "latitude REAL, " +
+                "longitude REAL)";
         db.execSQL(createTable);
     }
 
@@ -51,7 +55,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //inserting data, new lost/found post
     public boolean insertAdvert(String type, String name, String phone,
                                 String description, String category,
-                                String location, String date, String imagePath) {
+                                String location, String date, String imagePath,
+                                double latitude, double longitude) {
         //open db to add data
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -64,6 +69,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_LOCATION, location);
         values.put(COL_DATE, date);
         values.put(COL_IMAGE_PATH, imagePath);
+        values.put(COL_LATITUDE, latitude);
+        values.put(COL_LONGITUDE, longitude);
 
         long result = db.insert(TABLE_ADVERTS, null, values);
         return result != -1;
@@ -88,6 +95,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COL_IMAGE_PATH))
                 );
+                advert.setLatitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LATITUDE)));
+                advert.setLongitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LONGITUDE)));
                 adverts.add(advert);
             } while (cursor.moveToNext());
         }
@@ -118,6 +127,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COL_IMAGE_PATH))
                 );
+                advert.setLatitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LATITUDE)));
+                advert.setLongitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LONGITUDE)));
                 adverts.add(advert);
             } while (cursor.moveToNext());
         }

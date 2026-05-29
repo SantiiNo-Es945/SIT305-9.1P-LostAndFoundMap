@@ -11,6 +11,8 @@ public class Advert {
     private String location;
     private String date;
     private String imagePath;
+    private double latitude;
+    private double longitude;
 
     public Advert(int id, String type, String name, String phone,
                   String description, String category,
@@ -35,4 +37,20 @@ public class Advert {
     public String getLocation() { return location; }
     public String getDate() { return date; }
     public String getImagePath() { return imagePath; }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 }

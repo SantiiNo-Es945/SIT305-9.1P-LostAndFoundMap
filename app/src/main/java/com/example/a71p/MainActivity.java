@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button createAdvertButton, showAdvertsButton;
+    Button createAdvertButton, showAdvertsButton, showMapButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
         createAdvertButton = findViewById(R.id.createAdvertButton);
         showAdvertsButton = findViewById(R.id.showAdvertsButton);
-
+        showMapButton = findViewById(R.id.showMapButton);
         createAdvertButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CreateAdvertActivity.class);
             startActivity(intent);
@@ -24,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
 
         showAdvertsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AdvertListActivity.class);
+            startActivity(intent);
+        });
+        showMapButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MapActivity.class);
             startActivity(intent);
         });
     }

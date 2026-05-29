@@ -20,16 +20,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+
+import androidx.core.app.ActivityCompat;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
+import java.util.List;
 
 public class CreateAdvertActivity extends AppCompatActivity {
 
     RadioGroup typeRadioGroup;
     EditText nameEditText, phoneEditText, descriptionEditText, categoryEditText, locationEditText;
-    Button selectImageButton, saveAdvertButton;
+    Button selectImageButton, saveAdvertButton, getCurrentLocationButton;
     ImageView itemImageView;
 
     DatabaseHelper databaseHelper;
     String imagePath = "";
+    double selectedLatitude = -37.8136;
+    double selectedLongitude = 144.9631;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +50,9 @@ public class CreateAdvertActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_advert);
         //connects screen with SQLite
         databaseHelper = new DatabaseHelper(this);
+
+        FusedLocationProviderClient fusedLocationClient =
+                LocationServices.getFusedLocationProviderClient(this);
 
         typeRadioGroup = findViewById(R.id.typeRadioGroup);
         nameEditText = findViewById(R.id.nameEditText);
@@ -46,11 +62,64 @@ public class CreateAdvertActivity extends AppCompatActivity {
         locationEditText = findViewById(R.id.locationEditText);
         selectImageButton = findViewById(R.id.selectImageButton);
         saveAdvertButton = findViewById(R.id.saveAdvertButton);
+        getCurrentLocationButton = findViewById(R.id.getCurrentLocationButton);
         itemImageView = findViewById(R.id.itemImageView);
 
         selectImageButton.setOnClickListener(v -> openGallery());
 
         saveAdvertButton.setOnClickListener(v -> saveAdvert());
+        getCurrentLocationButton.setOnClickListener(v -> {
+
+            if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        1
+                );
+                return;
+            }
+
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+
+                        if (location != null) {
+
+                            selectedLatitude = location.getLatitude();
+                            selectedLongitude = location.getLongitude();
+
+                            try {
+
+                                Geocoder geocoder = new Geocoder(this);
+                                List<Address> addresses =
+                                        geocoder.getFromLocation(
+                                                selectedLatitude,
+                                                selectedLongitude,
+                                                1
+                                        );
+
+                                if (addresses != null && !addresses.isEmpty()) {
+
+                                    String address =
+                                            addresses.get(0).getAddressLine(0);
+
+                                    locationEditText.setText(address);
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            Toast.makeText(
+                                    this,
+                                    "Current location selected",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
+                    });
+        });
     }
     //open phone gallery
     private void openGallery() {
@@ -122,7 +191,8 @@ public class CreateAdvertActivity extends AppCompatActivity {
         }
         //save advert into SQLite
         boolean inserted = databaseHelper.insertAdvert(
-                type, name, phone, description, category, location, date, imagePath
+                type, name, phone, description, category, location, date, imagePath,
+                selectedLatitude, selectedLongitude
         );
 
         if (inserted) {

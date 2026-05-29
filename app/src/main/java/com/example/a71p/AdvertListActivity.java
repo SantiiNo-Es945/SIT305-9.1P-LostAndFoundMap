@@ -35,7 +35,7 @@ public class AdvertListActivity extends AppCompatActivity {
         advertsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         loadAllAdverts();
-
+        //category filter
         filterButton.setOnClickListener(v -> {
             String category = filterEditText.getText().toString();
             advertList = databaseHelper.getAdvertsByCategory(category);
